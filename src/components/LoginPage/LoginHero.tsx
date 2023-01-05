@@ -11,6 +11,7 @@ const LoginHero = () => {
   const password = useRef<HTMLInputElement>(null);
   const [loading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState("");
+  const [hasError, setHasError] = useState(false);
   const submitHandler = (event: any) => {
     event.preventDefault();
     setIsLoading(true);
@@ -40,10 +41,12 @@ const LoginHero = () => {
         localStorage.setItem("itm", data.user);
         setIsLoading(false);
         console.log(data);
+        setHasError(false);
         navigate("/home");
       })
       .catch((err) => {
         setIsLoading(false);
+        setHasError(true);
         setError(err.message);
       });
   };
@@ -59,6 +62,7 @@ const LoginHero = () => {
           </h1>
           <form className="mt-6" onSubmit={submitHandler}>
             <div className="mb-2">
+              {hasError && <p className="text-center text-red-600">{error}</p>}
               <label
                 htmlFor="name"
                 className="block text-sm font-semibold text-gray-800"
