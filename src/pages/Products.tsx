@@ -1,11 +1,11 @@
-import ProductsHero from "../components/products/ProductsHero";
+import MaterialsHero from "../components/materials/MaterialsHero";
 import Header from "../components/shared/Header";
 
 const Products = () => {
   return (
     <>
       <Header />
-      <ProductsHero />
+      <MaterialsHero />
     </>
   );
 };
