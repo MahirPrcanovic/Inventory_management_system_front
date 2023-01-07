@@ -21,9 +21,9 @@ const MaterialsHero = () => {
   // console.log(products);
   console.log(materials);
   return (
-    <div>
-      <div className="w-full h-36 bg-red-300"></div>
-      <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <div className="md:flex md:w-full">
+      <div className="w-full h-36 bg-red-300 md:h-auto md:w-80"></div>
+      <div className="relative overflow-x-auto shadow-md md:w-full">
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
