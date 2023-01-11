@@ -51,7 +51,8 @@ const LoginHero = () => {
       });
   };
   useEffect(() => {
-    if (localStorage.getItem("itm") != undefined) navigate("/materials");
+    // console.log("COOKIE LOGGED" + document.cookie.indexOf("logged"));
+    if (+document.cookie.indexOf("logged") != -1) navigate("/materials");
   }, []);
   return (
     <div className="relative flex flex-col justify-center min-h-screen overflow-hidden">

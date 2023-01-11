@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
-import { Button, Checkbox, Label, TextInput, Modal } from "flowbite-react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Button,
+  Checkbox,
+  Label,
+  TextInput,
+  Modal,
+  Spinner,
+} from "flowbite-react";
 interface Material {
   _id: string;
   name: string;
@@ -13,8 +20,12 @@ interface Material {
 const MaterialsHero = () => {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const [modalItemIndex, setModalItemIndex] = useState<number>();
+  const [submitEdit, setSubmitEdit] = useState<boolean>(false);
   const [modalItem, setModalItem] = useState<Material>();
+  const [modalIndex, setModalIndex] = useState(0);
+  const navigate = useNavigate();
+  const [error, setError] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
   const materialName = useRef<HTMLInputElement>(null);
   const materialQuantity = useRef<HTMLInputElement>(null);
   const materialMinQuantity = useRef<HTMLInputElement>(null);
@@ -28,8 +39,7 @@ const MaterialsHero = () => {
       .then((res) => res.json())
       .then((data) => setMaterials(data.materials));
   }, []);
-  // console.log(products);
-  console.log(materials);
+  useEffect(() => {});
   const onClick = () => {
     setModalOpen(true);
   };
@@ -41,37 +51,54 @@ const MaterialsHero = () => {
     const updateObject: { [key: string]: any } = {};
     if (materialName.current?.value !== modalItem?.name)
       updateObject.name = materialName.current?.value;
-    if (
-      materialQuantity.current?.value
-        ? +materialQuantity.current.value
-        : 1 !== modalItem?.quantity
-    )
+    if (materialQuantity.current?.value != modalItem?.quantity.toString())
       updateObject.quantity = materialQuantity.current?.value
         ? +materialQuantity.current.value
         : 1;
     if (
-      materialMinQuantity.current?.value
-        ? +materialMinQuantity.current.value
-        : 1 !== modalItem?.minQuantity
+      materialMinQuantity.current?.value !== modalItem?.minQuantity.toString()
     )
       updateObject.minQuantity = materialMinQuantity.current?.value
         ? +materialMinQuantity.current.value
         : 1;
-    if (
-      materialPrice.current?.value
-        ? +materialPrice.current.value
-        : 1 !== modalItem?.price
-    )
+    if (materialPrice.current?.value != modalItem?.price.toString())
       updateObject.price = materialPrice.current?.value
         ? +materialPrice.current.value
         : 1;
-    if (materialIsUsed.current?.value !== modalItem?.isUsed)
-      updateObject.isUsed = materialIsUsed.current?.value;
-    if (materialUnitOfMeasurement.current?.value !== modalItem?.isUsed)
-      updateObject.unitOfMeasurement = materialUnitOfMeasurement.current?.value;
+    if (materialIsUsed.current?.value !== modalItem?.isUsed.toString())
+      updateObject.isUsed =
+        materialIsUsed.current?.value === "true" ? true : false;
+    if (materialUnitOfMeasurement.current?.value !== modalItem?.unitOfMeasure)
+      updateObject.unitOfMeasure = materialUnitOfMeasurement.current?.value;
+    console.log("sent object");
     console.log(updateObject);
-    console.log("Submitano");
+    fetch(`http://localhost:3000/materials/${modalItem?._id}`, {
+      method: "PATCH",
+      body: JSON.stringify(updateObject),
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res: any) => {
+        if (res.status === 401 || res.status === 403) {
+          navigate("/auth/login");
+        } else if (res.status === 400) {
+          setError("Data not valid");
+          return;
+        }
+        return res.json();
+      })
+      .then((data) => {
+        console.log(data);
+        materials[modalIndex] = data.updatedMaterial;
+        setSubmitEdit(false);
+        formRef.current?.reset();
+        onClose();
+        setError("");
+      });
   };
+  console.log(materials);
   return (
     <div className="lg:flex md:w-full">
       <div className="w-full h-full bg-gray-700 lg:h-auto lg:w-72">
@@ -146,14 +173,23 @@ const MaterialsHero = () => {
                         onClick();
                         // setModalItemIndex(index);
                         setModalItem(materials[index]);
+                        setModalIndex(index);
                       }}
                     >
                       Edit
                     </Button>
-                    <Modal show={modalOpen} position="center" onClose={onClose}>
+                    <Modal
+                      show={modalOpen}
+                      position="center"
+                      onClose={() => {
+                        onClose();
+                        formRef.current?.reset();
+                        setSubmitEdit(false);
+                      }}
+                    >
                       <Modal.Header>Edit material</Modal.Header>
                       <Modal.Body>
-                        <form onSubmit={editHandler}>
+                        <form onSubmit={editHandler} ref={formRef}>
                           <div className="flex flex-col md:flex-row md:justify-evenly">
                             <div>
                               <div>
@@ -238,8 +274,21 @@ const MaterialsHero = () => {
                             </div>
                           </div>
                           <Modal.Footer className="mt-4 mb-0">
-                            <Button onClick={onClick} type="submit">
-                              Submit
+                            <Button
+                              type="submit"
+                              onClick={() => {
+                                setSubmitEdit(true);
+                              }}
+                            >
+                              {submitEdit ? (
+                                <span>
+                                  <Spinner aria-label="Spinner button example" />
+                                  <span className="pl-3">Loading...</span>
+                                </span>
+                              ) : (
+                                <span>Submit</span>
+                              )}
+                              <span className="text-red-500">{error}</span>
                             </Button>
                           </Modal.Footer>
                         </form>
