@@ -8,6 +8,7 @@ import {
   Modal,
   Spinner,
 } from "flowbite-react";
+import AddMaterial from "./AddMaterial";
 interface Material {
   _id: string;
   name: string;
@@ -18,6 +19,7 @@ interface Material {
   minQuantity: number;
 }
 const MaterialsHero = () => {
+  const [openAddModal, setOpenAddModal] = useState(false);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [submitEdit, setSubmitEdit] = useState<boolean>(false);
@@ -112,8 +114,8 @@ const MaterialsHero = () => {
   };
   console.log(materials);
   return (
-    <div className="lg:flex md:w-full">
-      <div className="w-full h-full bg-gray-700 lg:h-auto lg:w-72">
+    <div className="lg:flex md:w-full min-h-screen">
+      <div className="w-full h-full bg-gray-700 lg:h-[400px] lg:w-72">
         <div className="flex justify-center items-center pt-6 text-2xl text-white lg:text-lg h-1/2">
           <h1 className="">Number of materials:</h1>
           <h1 className="">{materials.length}</h1>
@@ -357,6 +359,23 @@ const MaterialsHero = () => {
           </tbody>
         </table>
       </div>
+      <Button
+        color="purple"
+        pill={true}
+        onClick={() => setOpenAddModal(true)}
+        className="fixed bottom-0 right-0 mr-10 mb-10"
+      >
+        Add new material
+      </Button>
+      <AddMaterial
+        modalOpen={openAddModal}
+        onClose={() => {
+          setOpenAddModal(false);
+        }}
+        onOpen={() => {
+          setOpenAddModal(true);
+        }}
+      />
     </div>
   );
 };

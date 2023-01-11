@@ -1,0 +1,119 @@
+import { Modal, Label, TextInput, Button, Spinner } from "flowbite-react";
+import React, { useRef, useState } from "react";
+
+const AddMaterial = ({
+  modalOpen,
+  onOpen,
+  onClose,
+}: {
+  modalOpen: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+}) => {
+  // const [modalOpen, setModalOpen] = useState(false);
+  const [error, setError] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
+  const materialName = useRef<HTMLInputElement>(null);
+  const materialQuantity = useRef<HTMLInputElement>(null);
+  const materialMinQuantity = useRef<HTMLInputElement>(null);
+  const materialIsUsed = useRef<HTMLInputElement>(null);
+  const materialPrice = useRef<HTMLInputElement>(null);
+  const materialUnitOfMeasure = useRef<HTMLInputElement>(null);
+  const materialSupplierId = useRef<HTMLInputElement>(null);
+  const submitHandler = (e: any) => {
+    e.preventDefault();
+    const addObj = {
+      name: materialName.current?.value,
+      quantity: materialQuantity.current?.value,
+      minQuantity: materialMinQuantity.current?.value,
+      unitOfMeasure: materialUnitOfMeasure.current?.value,
+      isUsed: materialIsUsed.current?.value,
+      supplierId: materialSupplierId.current?.value,
+      price: materialPrice.current?.value,
+    };
+  };
+  return (
+    <Modal
+      show={modalOpen}
+      position="center"
+      onClose={() => {
+        onClose();
+        formRef.current?.reset();
+      }}
+    >
+      <Modal.Header>Edit material</Modal.Header>
+      <Modal.Body>
+        <form onSubmit={submitHandler} ref={formRef}>
+          <div className="flex flex-col md:flex-row md:justify-evenly">
+            <div>
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="name" value="Name of material" />
+                </div>
+                <TextInput id="name" type="text" ref={materialName} />
+              </div>
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="quantity" value="Quantity" />
+                </div>
+                <TextInput id="quantity" type="text" ref={materialQuantity} />
+              </div>
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="isused" value="Is Used" />
+                </div>
+                <TextInput id="minquantity" type="text" ref={materialIsUsed} />
+              </div>
+            </div>
+            <div>
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="price" value="Price" />
+                </div>
+                <TextInput id="price" type="text" ref={materialPrice} />
+              </div>
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="unitofMeasure" value="Unit of Measure" />
+                </div>
+                <TextInput
+                  id="unitofmeasure"
+                  type="text"
+                  ref={materialUnitOfMeasure}
+                />
+              </div>
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="minquantity" value="Min Quantity" />
+                </div>
+                <TextInput
+                  id="minquantity"
+                  type="text"
+                  ref={materialMinQuantity}
+                />
+              </div>
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="supplierid" value="Supplier" />
+                </div>
+                <TextInput
+                  id="supplierid"
+                  type="text"
+                  ref={materialSupplierId}
+                />
+              </div>
+            </div>
+          </div>
+          <Modal.Footer className="mt-4 mb-0">
+            <Button type="submit">
+              <span>Submit</span>
+              <span className="text-red-500">{error}</span>
+            </Button>
+          </Modal.Footer>
+        </form>
+      </Modal.Body>
+    </Modal>
+  );
+};
+
+export default AddMaterial;
