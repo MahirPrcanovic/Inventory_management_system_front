@@ -23,6 +23,7 @@ const MaterialDetailHero = ({ id }: { id: string }) => {
       </div>
     );
   };
+
   return (
     <section className="flex flex-col bg-gray-700 h-[800px] md:h-screen md:flex-row md:justify-center align-center md:gap-20">
       <div className="mt-10 md:flex md:flex-col md:items-start">

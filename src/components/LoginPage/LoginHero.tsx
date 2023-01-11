@@ -42,7 +42,7 @@ const LoginHero = () => {
         setIsLoading(false);
         console.log(data);
         setHasError(false);
-        navigate("/home");
+        navigate("/materials");
       })
       .catch((err) => {
         setIsLoading(false);
@@ -50,9 +50,9 @@ const LoginHero = () => {
         setError(err.message);
       });
   };
-  // useEffect(() => {
-  //   if (localStorage.getItem("itm") != undefined) navigate("/home");
-  // }, []);
+  useEffect(() => {
+    if (localStorage.getItem("itm") != undefined) navigate("/materials");
+  }, []);
   return (
     <div className="relative flex flex-col justify-center min-h-screen overflow-hidden">
       {!loading ? (
