@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Checkbox, Label, TextInput, Modal } from "flowbite-react";
 interface Material {
@@ -13,6 +13,14 @@ interface Material {
 const MaterialsHero = () => {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [modalItemIndex, setModalItemIndex] = useState<number>();
+  const [modalItem, setModalItem] = useState<Material>();
+  const materialName = useRef<HTMLInputElement>(null);
+  const materialQuantity = useRef<HTMLInputElement>(null);
+  const materialMinQuantity = useRef<HTMLInputElement>(null);
+  const materialIsUsed = useRef<HTMLInputElement>(null);
+  const materialPrice = useRef<HTMLInputElement>(null);
+  const materialUnitOfMeasurement = useRef<HTMLInputElement>(null);
   useEffect(() => {
     fetch("http://localhost:3000/materials", {
       credentials: "include",
@@ -27,6 +35,42 @@ const MaterialsHero = () => {
   };
   const onClose = () => {
     setModalOpen(false);
+  };
+  const editHandler = (e: any) => {
+    e.preventDefault();
+    const updateObject: { [key: string]: any } = {};
+    if (materialName.current?.value !== modalItem?.name)
+      updateObject.name = materialName.current?.value;
+    if (
+      materialQuantity.current?.value
+        ? +materialQuantity.current.value
+        : 1 !== modalItem?.quantity
+    )
+      updateObject.quantity = materialQuantity.current?.value
+        ? +materialQuantity.current.value
+        : 1;
+    if (
+      materialMinQuantity.current?.value
+        ? +materialMinQuantity.current.value
+        : 1 !== modalItem?.minQuantity
+    )
+      updateObject.minQuantity = materialMinQuantity.current?.value
+        ? +materialMinQuantity.current.value
+        : 1;
+    if (
+      materialPrice.current?.value
+        ? +materialPrice.current.value
+        : 1 !== modalItem?.price
+    )
+      updateObject.price = materialPrice.current?.value
+        ? +materialPrice.current.value
+        : 1;
+    if (materialIsUsed.current?.value !== modalItem?.isUsed)
+      updateObject.isUsed = materialIsUsed.current?.value;
+    if (materialUnitOfMeasurement.current?.value !== modalItem?.isUsed)
+      updateObject.unitOfMeasurement = materialUnitOfMeasurement.current?.value;
+    console.log(updateObject);
+    console.log("Submitano");
   };
   return (
     <div className="lg:flex md:w-full">
@@ -68,7 +112,7 @@ const MaterialsHero = () => {
             </tr>
           </thead>
           <tbody className="bg-gray-700">
-            {materials.map((material) => {
+            {materials.map((material, index) => {
               return (
                 <tr
                   key={material._id}
@@ -89,7 +133,6 @@ const MaterialsHero = () => {
                     {material.isUsed == true ? "Yes" : "No"}
                   </td>
                   <td className="px-6 py-4">{material.unitOfMeasure}</td>
-                  {/* <td className="px-6 py-4">3.0 lb.</td> */}
                   <td className="flex items-center px-6 py-4 space-x-3">
                     <Link
                       to={`/materials/${material._id}`}
@@ -97,64 +140,109 @@ const MaterialsHero = () => {
                     >
                       Details
                     </Link>
-                    <Button onClick={onClick}>Edit</Button>
-                    <Modal
-                      show={modalOpen}
-                      size="md"
-                      popup={true}
-                      onClose={onClose}
+                    {/* EDIT MODAL */}
+                    <Button
+                      onClick={() => {
+                        onClick();
+                        // setModalItemIndex(index);
+                        setModalItem(materials[index]);
+                      }}
                     >
-                      <Modal.Header />
+                      Edit
+                    </Button>
+                    <Modal show={modalOpen} position="center" onClose={onClose}>
+                      <Modal.Header>Edit material</Modal.Header>
                       <Modal.Body>
-                        <div className="space-y-6 px-6 pb-4 sm:pb-6 lg:px-8 xl:pb-8">
-                          <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-                            Sign in to our platform
-                          </h3>
-                          <div>
-                            <div className="mb-2 block">
-                              <Label htmlFor="email" value="Your email" />
+                        <form onSubmit={editHandler}>
+                          <div className="flex flex-col md:flex-row md:justify-evenly">
+                            <div>
+                              <div>
+                                <div className="mb-2 block">
+                                  <Label
+                                    htmlFor="name"
+                                    value="Name of material"
+                                  />
+                                </div>
+                                <TextInput
+                                  id="name"
+                                  type="text"
+                                  defaultValue={modalItem?.name}
+                                  ref={materialName}
+                                />
+                              </div>
+                              <div>
+                                <div className="mb-2 block">
+                                  <Label htmlFor="quantity" value="Quantity" />
+                                </div>
+                                <TextInput
+                                  id="quantity"
+                                  type="text"
+                                  defaultValue={modalItem?.quantity}
+                                  ref={materialQuantity}
+                                />
+                              </div>
+                              <div>
+                                <div className="mb-2 block">
+                                  <Label htmlFor="isused" value="Is Used" />
+                                </div>
+                                <TextInput
+                                  id="minquantity"
+                                  type="text"
+                                  defaultValue={
+                                    modalItem?.isUsed ? "true" : "false"
+                                  }
+                                  ref={materialIsUsed}
+                                />
+                              </div>
                             </div>
-                            <TextInput
-                              id="email"
-                              placeholder="name@company.com"
-                              required={true}
-                            />
-                          </div>
-                          <div>
-                            <div className="mb-2 block">
-                              <Label htmlFor="password" value="Your password" />
+                            <div>
+                              <div>
+                                <div className="mb-2 block">
+                                  <Label htmlFor="price" value="Price" />
+                                </div>
+                                <TextInput
+                                  id="price"
+                                  type="text"
+                                  defaultValue={modalItem?.price}
+                                  ref={materialPrice}
+                                />
+                              </div>
+                              <div>
+                                <div className="mb-2 block">
+                                  <Label
+                                    htmlFor="unitofMeasure"
+                                    value="Unit of Measure"
+                                  />
+                                </div>
+                                <TextInput
+                                  id="unitofmeasure"
+                                  type="text"
+                                  defaultValue={modalItem?.unitOfMeasure}
+                                  ref={materialUnitOfMeasurement}
+                                />
+                              </div>
+                              <div>
+                                <div className="mb-2 block">
+                                  <Label
+                                    htmlFor="minquantity"
+                                    value="Min Quantity"
+                                  />
+                                </div>
+                                <TextInput
+                                  id="minquantity"
+                                  type="text"
+                                  defaultValue={modalItem?.minQuantity}
+                                  ref={materialMinQuantity}
+                                />
+                              </div>
                             </div>
-                            <TextInput
-                              id="password"
-                              type="password"
-                              required={true}
-                            />
                           </div>
-                          <div className="flex justify-between">
-                            <div className="flex items-center gap-2">
-                              <Checkbox id="remember" />
-                              <Label htmlFor="remember">Remember me</Label>
-                            </div>
-                            <a
-                              href="/modal"
-                              className="text-sm text-blue-700 hover:underline dark:text-blue-500"
-                            >
-                              Lost Password?
-                            </a>
-                          </div>
-                          <div className="w-full">
-                            <Button>Log in to your account</Button>
-                          </div>
-                          <div className="text-sm font-medium text-gray-500 dark:text-gray-300">
-                            Not registered?{" "}
-                            <a
-                              href="/modal"
-                              className="text-blue-700 hover:underline dark:text-blue-500"
-                            >
-                              Create account
-                            </a>
-                          </div>
-                        </div>
+                          <Modal.Footer className="mt-4 mb-0">
+                            <Button onClick={onClick} type="submit">
+                              Submit
+                            </Button>
+                          </Modal.Footer>
+                        </form>
                       </Modal.Body>
                     </Modal>
                     <a
