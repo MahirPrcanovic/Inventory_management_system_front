@@ -1,17 +1,28 @@
-import { Modal, Label, TextInput, Button, Spinner } from "flowbite-react";
-import React, { useRef, useState } from "react";
-
+import {
+  Modal,
+  Label,
+  TextInput,
+  Button,
+  Spinner,
+  Alert,
+} from "flowbite-react";
+import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 const AddMaterial = ({
   modalOpen,
   onOpen,
   onClose,
+  setMaterials,
 }: {
   modalOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
+  setMaterials: any;
 }) => {
   // const [modalOpen, setModalOpen] = useState(false);
+  const navigate = useNavigate();
   const [error, setError] = useState("");
+  const [hasError, setHasError] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const materialName = useRef<HTMLInputElement>(null);
   const materialQuantity = useRef<HTMLInputElement>(null);
@@ -24,13 +35,52 @@ const AddMaterial = ({
     e.preventDefault();
     const addObj = {
       name: materialName.current?.value,
-      quantity: materialQuantity.current?.value,
-      minQuantity: materialMinQuantity.current?.value,
+      quantity:
+        materialQuantity.current?.value && +materialQuantity.current.value,
+      minQuantity:
+        materialMinQuantity.current?.value &&
+        +materialMinQuantity.current.value,
       unitOfMeasure: materialUnitOfMeasure.current?.value,
-      isUsed: materialIsUsed.current?.value,
+      isUsed:
+        materialIsUsed.current?.value && materialIsUsed.current.value == "true"
+          ? true
+          : false,
       supplierId: materialSupplierId.current?.value,
-      price: materialPrice.current?.value,
+      price: materialPrice.current?.value && +materialPrice.current.value,
     };
+    console.log(addObj);
+    fetch("http://localhost:3000/materials", {
+      method: "POST",
+      body: JSON.stringify(addObj),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    })
+      .then((res: any) => {
+        if (res.status === 400) {
+          throw new Error("Please check your data validity.");
+        } else if (res.status === 401 || res.status === 403) {
+          navigate("/auth/login");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setHasError(false);
+        setError("");
+        onClose();
+        console.log(data);
+        setMaterials((prev: any) => [...prev, data.newMaterial]);
+        formRef.current?.reset();
+      })
+      .catch((err) => {
+        setHasError(true);
+        setError(err.message);
+        formRef.current?.reset();
+        setTimeout(() => {
+          setHasError(false);
+        }, 3000);
+      });
   };
   return (
     <Modal
@@ -43,6 +93,13 @@ const AddMaterial = ({
     >
       <Modal.Header>Edit material</Modal.Header>
       <Modal.Body>
+        {hasError && (
+          <Alert color="failure">
+            <span>
+              <span className="font-medium">Info alert!</span> {error}
+            </span>
+          </Alert>
+        )}
         <form onSubmit={submitHandler} ref={formRef}>
           <div className="flex flex-col md:flex-row md:justify-evenly">
             <div>
@@ -107,7 +164,6 @@ const AddMaterial = ({
           <Modal.Footer className="mt-4 mb-0">
             <Button type="submit">
               <span>Submit</span>
-              <span className="text-red-500">{error}</span>
             </Button>
           </Modal.Footer>
         </form>

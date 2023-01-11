@@ -375,6 +375,7 @@ const MaterialsHero = () => {
         onOpen={() => {
           setOpenAddModal(true);
         }}
+        setMaterials={setMaterials}
       />
     </div>
   );
