@@ -23,6 +23,7 @@ const MaterialsHero = () => {
   const [submitEdit, setSubmitEdit] = useState<boolean>(false);
   const [modalItem, setModalItem] = useState<Material>();
   const [modalIndex, setModalIndex] = useState(0);
+  const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
@@ -96,6 +97,17 @@ const MaterialsHero = () => {
         formRef.current?.reset();
         onClose();
         setError("");
+      });
+  };
+  const deleteItem = (id: string) => {
+    fetch(`http://localhost:3000/materials/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setMaterials(materials.filter((material) => material._id !== id));
+        setOpenDeleteModal(false);
       });
   };
   console.log(materials);
@@ -297,10 +309,48 @@ const MaterialsHero = () => {
                     <a
                       href="#"
                       className="font-medium text-red-600 dark:text-red-500 hover:underline"
+                      onClick={() => {
+                        setOpenDeleteModal(true);
+                      }}
                     >
                       Remove
                     </a>
                   </td>
+                  <Modal
+                    show={openDeleteModal}
+                    size="md"
+                    popup={true}
+                    onClose={() => {
+                      setOpenDeleteModal(false);
+                    }}
+                  >
+                    <Modal.Header />
+                    <Modal.Body>
+                      <div className="text-center">
+                        <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                          Are you sure you want to delete this product?
+                        </h3>
+                        <div className="flex justify-center gap-4">
+                          <Button
+                            color="failure"
+                            onClick={() => {
+                              deleteItem(material._id);
+                            }}
+                          >
+                            Yes, I'm sure
+                          </Button>
+                          <Button
+                            color="gray"
+                            onClick={() => {
+                              setOpenDeleteModal(false);
+                            }}
+                          >
+                            No, cancel
+                          </Button>
+                        </div>
+                      </div>
+                    </Modal.Body>
+                  </Modal>
                 </tr>
               );
             })}
