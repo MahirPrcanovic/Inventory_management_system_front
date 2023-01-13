@@ -20,6 +20,7 @@ interface Material {
 }
 const MaterialsHero = () => {
   const [openAddModal, setOpenAddModal] = useState(false);
+  const [deleteID, setDeleteID] = useState<string>();
   const [materials, setMaterials] = useState<Material[]>([]);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [submitEdit, setSubmitEdit] = useState<boolean>(false);
@@ -35,12 +36,21 @@ const MaterialsHero = () => {
   const materialIsUsed = useRef<HTMLInputElement>(null);
   const materialPrice = useRef<HTMLInputElement>(null);
   const materialUnitOfMeasurement = useRef<HTMLInputElement>(null);
+  const [suppliers, setSuppliers] = useState<{ _id: string; name: string }[]>(
+    []
+  );
   useEffect(() => {
     fetch("http://localhost:3000/materials", {
       credentials: "include",
     })
       .then((res) => res.json())
       .then((data) => setMaterials(data.materials));
+
+    fetch("http://localhost:3000/suppliers/onlyids", {
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => setSuppliers(data));
   }, []);
   useEffect(() => {});
   const onClick = () => {
@@ -101,14 +111,14 @@ const MaterialsHero = () => {
         setError("");
       });
   };
-  const deleteItem = (id: string) => {
-    fetch(`http://localhost:3000/materials/${id}`, {
+  const deleteItem = () => {
+    fetch(`http://localhost:3000/materials/${deleteID}`, {
       method: "DELETE",
       credentials: "include",
     })
       .then((res) => res.json())
       .then((data) => {
-        setMaterials(materials.filter((material) => material._id !== id));
+        setMaterials(materials.filter((material) => material._id !== deleteID));
         setOpenDeleteModal(false);
       });
   };
@@ -185,7 +195,6 @@ const MaterialsHero = () => {
                     <Button
                       onClick={() => {
                         onClick();
-                        // setModalItemIndex(index);
                         setModalItem(materials[index]);
                         setModalIndex(index);
                       }}
@@ -313,6 +322,8 @@ const MaterialsHero = () => {
                       className="font-medium text-red-600 dark:text-red-500 hover:underline"
                       onClick={() => {
                         setOpenDeleteModal(true);
+                        console.log(material._id);
+                        setDeleteID(material._id);
                       }}
                     >
                       Remove
@@ -336,7 +347,7 @@ const MaterialsHero = () => {
                           <Button
                             color="failure"
                             onClick={() => {
-                              deleteItem(material._id);
+                              deleteItem();
                             }}
                           >
                             Yes, I'm sure
@@ -376,6 +387,7 @@ const MaterialsHero = () => {
           setOpenAddModal(true);
         }}
         setMaterials={setMaterials}
+        suppliers={suppliers}
       />
     </div>
   );

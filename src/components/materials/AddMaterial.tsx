@@ -6,18 +6,20 @@ import {
   Spinner,
   Alert,
 } from "flowbite-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 const AddMaterial = ({
   modalOpen,
   onOpen,
   onClose,
   setMaterials,
+  suppliers,
 }: {
   modalOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
   setMaterials: any;
+  suppliers: { _id: string; name: string }[];
 }) => {
   // const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -27,10 +29,10 @@ const AddMaterial = ({
   const materialName = useRef<HTMLInputElement>(null);
   const materialQuantity = useRef<HTMLInputElement>(null);
   const materialMinQuantity = useRef<HTMLInputElement>(null);
-  const materialIsUsed = useRef<HTMLInputElement>(null);
+  const materialIsUsed = useRef<HTMLSelectElement>(null);
   const materialPrice = useRef<HTMLInputElement>(null);
   const materialUnitOfMeasure = useRef<HTMLInputElement>(null);
-  const materialSupplierId = useRef<HTMLInputElement>(null);
+  const materialSupplierId = useRef<HTMLSelectElement>(null);
   const submitHandler = (e: any) => {
     e.preventDefault();
     const addObj = {
@@ -41,14 +43,12 @@ const AddMaterial = ({
         materialMinQuantity.current?.value &&
         +materialMinQuantity.current.value,
       unitOfMeasure: materialUnitOfMeasure.current?.value,
-      isUsed:
-        materialIsUsed.current?.value && materialIsUsed.current.value == "true"
-          ? true
-          : false,
+      isUsed: Boolean(materialIsUsed.current?.value),
       supplierId: materialSupplierId.current?.value,
       price: materialPrice.current?.value && +materialPrice.current.value,
     };
     console.log(addObj);
+    console.log(Boolean(materialIsUsed.current?.value));
     fetch("http://localhost:3000/materials", {
       method: "POST",
       body: JSON.stringify(addObj),
@@ -119,7 +119,11 @@ const AddMaterial = ({
                 <div className="mb-2 block">
                   <Label htmlFor="isused" value="Is Used" />
                 </div>
-                <TextInput id="minquantity" type="text" ref={materialIsUsed} />
+                <select id="cars" name="cars" ref={materialIsUsed}>
+                  <option value="true">true</option>
+                  <option value="false">false</option>
+                </select>
+                {/* <TextInput id="minquantity" type="text" ref={materialIsUsed} /> */}
               </div>
             </div>
             <div>
@@ -153,11 +157,16 @@ const AddMaterial = ({
                 <div className="mb-2 block">
                   <Label htmlFor="supplierid" value="Supplier" />
                 </div>
-                <TextInput
+                <select id="cars" name="cars" ref={materialSupplierId}>
+                  {suppliers.map((supplier) => (
+                    <option value={supplier._id}>{supplier.name}</option>
+                  ))}
+                </select>
+                {/* <TextInput
                   id="supplierid"
                   type="text"
                   ref={materialSupplierId}
-                />
+                /> */}
               </div>
             </div>
           </div>
