@@ -41,13 +41,13 @@ const MaterialsHero = () => {
     []
   );
   useEffect(() => {
-    fetch("http://localhost:3000/materials", {
+    fetch(`${import.meta.env.VITE_API_URL}/materials`, {
       credentials: "include",
     })
       .then((res) => res.json())
       .then((data) => setMaterials(data.materials));
 
-    fetch("http://localhost:3000/suppliers/onlyids", {
+    fetch(`${import.meta.env.VITE_API_URL}/suppliers/onlyids`, {
       credentials: "include",
     })
       .then((res) => res.json())
@@ -86,7 +86,7 @@ const MaterialsHero = () => {
       updateObject.unitOfMeasure = materialUnitOfMeasurement.current?.value;
     console.log("sent object");
     console.log(updateObject);
-    fetch(`http://localhost:3000/materials/${modalItem?._id}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/materials/${modalItem?._id}`, {
       method: "PATCH",
       body: JSON.stringify(updateObject),
       credentials: "include",
@@ -113,7 +113,7 @@ const MaterialsHero = () => {
       });
   };
   const deleteItem = () => {
-    fetch(`http://localhost:3000/materials/${deleteID}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/materials/${deleteID}`, {
       method: "DELETE",
       credentials: "include",
     })

@@ -3,14 +3,17 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Supplier } from "../../models/interfaces";
 import EditModal from "../shared/EditModal";
+import RemoveModal from "../shared/RemoveModal";
 import Table from "../shared/Table";
 
 const SupplierHero = () => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const navigate = useNavigate();
   const [editModalSupplier, setEditModalSupplier] = useState<Supplier>();
-  const [editID, setEditID] = useState<string>();
+  const [id, setID] = useState<any>();
   const [modalOpen, setModalOpen] = useState(false);
+  const [modalIndex, setModalIndex] = useState(0);
+  const [error, setError] = useState<string>("");
   const supplierName = useRef<HTMLInputElement>(null);
   const supplierPDV = useRef<HTMLInputElement>(null);
   const supplierEmail = useRef<HTMLInputElement>(null);
@@ -18,16 +21,17 @@ const SupplierHero = () => {
   const supplierPhoneNumber = useRef<HTMLInputElement>(null);
   const supplierContactPerson = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    fetch("http://localhost:3000/suppliers", { credentials: "include" })
+    fetch(`${import.meta.env.VITE_API_URL}/suppliers`, {
+      credentials: "include",
+    })
       .then((res) => {
         if (res.status == 401 || res.status == 403) navigate("/auth/login");
         return res.json();
       })
       .then((data) => setSuppliers(data));
   }, []);
-  const editSupplier = () => {};
   const editHandler = (id: string) => {
-    fetch(`http://localhost:3000/suppliers/${id}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/suppliers/${id}`, {
       credentials: "include",
     })
       .then((res) => {
@@ -36,6 +40,44 @@ const SupplierHero = () => {
         return res.json();
       })
       .then((data) => setEditModalSupplier(data.supplier));
+  };
+  const submitHandler = (e: any) => {
+    e.preventDefault();
+    console.log(id);
+    const updateObject: { [key: string]: any } = {};
+    if (editModalSupplier?.name != supplierName.current?.value)
+      updateObject.name = supplierName.current?.value;
+    if (editModalSupplier?.email != supplierEmail.current?.value)
+      updateObject.email = supplierEmail.current?.value;
+    if (editModalSupplier?.pdv != supplierPDV.current?.value)
+      updateObject.pdv = supplierPDV.current?.value;
+    if (editModalSupplier?.phoneNumber != supplierPhoneNumber.current?.value)
+      updateObject.phoneNumber = supplierPhoneNumber.current?.value;
+    if (editModalSupplier?.uin != supplierUIN.current?.value)
+      updateObject.uin = supplierUIN.current?.value;
+    if (
+      editModalSupplier?.contactPerson != supplierContactPerson.current?.value
+    )
+      updateObject.contactPerson = supplierContactPerson.current?.value;
+    fetch(`${import.meta.env.VITE_API_URL}/suppliers/${id}`, {
+      method: "PATCH",
+      credentials: "include",
+      body: JSON.stringify(updateObject),
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res: any) => {
+        if (res.status == 401 || res.status == 403) navigate("/auth/login");
+        if (res.status == 400) {
+          setError("Invalid request");
+          return;
+        }
+        return res.json();
+      })
+      .then((data) => {
+        console.log(data);
+        suppliers[modalIndex] = data.updatedSupplier;
+        setModalOpen(false);
+      });
   };
   return (
     <div className="lg:flex md:w-full min-h-screen">
@@ -74,24 +116,17 @@ const SupplierHero = () => {
                   {/* EDIT MODAL */}
                   <Button
                     onClick={() => {
-                      console.log(
-                        "SUPPLIER ID TO STRING JE " + supplier._id.toString()
-                      );
-                      setEditID(supplier._id.toString());
                       setModalOpen(true);
-                      console.log(supplier._id);
-                      console.log(editID);
-                      // onClick();
-                      // setModalItem(materials[index]);
-                      // setModalIndex(index);
                       editHandler(supplier._id);
+                      setID(supplier._id);
+                      setModalIndex(index);
                     }}
                   >
                     Edit
                   </Button>
                   <EditModal
-                    // editHandler={editHandler}
-                    editHandler={() => {}}
+                    error={error}
+                    submitHandler={submitHandler}
                     modalOpen={modalOpen}
                     onClose={() => {
                       setModalOpen(false);
@@ -172,17 +207,6 @@ const SupplierHero = () => {
                       </div>
                     </div>
                   </EditModal>
-                  <a
-                    href="#"
-                    className="font-medium text-red-600 dark:text-red-500 hover:underline"
-                    onClick={() => {
-                      // setOpenDeleteModal(true);
-                      // console.log(material._id);
-                      // setDeleteID(material._id);
-                    }}
-                  >
-                    Remove
-                  </a>
                 </td>
               </tr>
             );

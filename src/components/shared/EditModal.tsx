@@ -1,17 +1,19 @@
-import { Button, Label, Modal, TextInput } from "flowbite-react";
+import { Alert, Button, Label, Modal, TextInput } from "flowbite-react";
 import React, { Children, useRef } from "react";
 
 interface EditProps {
-  editHandler: () => void;
+  submitHandler: (e: any) => void;
   modalOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  error: string;
 }
 const EditModal = ({
-  editHandler,
+  submitHandler,
   modalOpen,
   onClose,
   children,
+  error,
 }: EditProps) => {
   const formRef = useRef<HTMLFormElement>(null);
   return (
@@ -26,7 +28,14 @@ const EditModal = ({
     >
       <Modal.Header>Edit Supplier</Modal.Header>
       <Modal.Body>
-        <form onSubmit={editHandler} ref={formRef}>
+        {error?.trim().length > 0 && (
+          <Alert color="failure">
+            <span>
+              <span className="font-medium">Info alert!</span> {error}
+            </span>
+          </Alert>
+        )}
+        <form onSubmit={submitHandler} ref={formRef}>
           <div className="flex flex-col md:flex-row md:justify-evenly">
             {children}
           </div>
