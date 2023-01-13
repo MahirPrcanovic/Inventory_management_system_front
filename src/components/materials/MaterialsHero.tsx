@@ -9,6 +9,7 @@ import {
   Spinner,
 } from "flowbite-react";
 import AddMaterial from "./AddMaterial";
+import Table from "../shared/Table";
 interface Material {
   _id: string;
   name: string;
@@ -138,237 +139,221 @@ const MaterialsHero = () => {
         </div>
       </div>
       <div className="relative overflow-x-auto shadow-md md:w-full border-t border-gray-200 lg:border-none">
-        <table className="w-full text-sm text-left  text-gray-400 bg-gray-700">
-          <thead className="text-xs  uppercase bg-gray-700 text-gray-400">
-            <tr>
-              <th scope="col" className="px-6 py-3">
-                ID
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Name
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Quantity/MinQuantity
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Price
-              </th>
-              <th scope="col" className="px-6 py-3">
-                IsUsed
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Unit of Measure
-              </th>
-              <th scope="col" className="px-6 py-3"></th>
-            </tr>
-          </thead>
-          <tbody className="bg-gray-700">
-            {materials.map((material, index) => {
-              return (
-                <tr
-                  key={material._id}
-                  className=" border-b  border-gray-700 hover:bg-gray-600 bg-gray-700"
+        <Table
+          head={[
+            "ID",
+            "Name",
+            "Quantity/MinQuantity",
+            "Price",
+            "isUsed",
+            "Unit of Measure",
+          ]}
+        >
+          {materials.map((material, index) => {
+            return (
+              <tr
+                key={material._id}
+                className=" border-b  border-gray-700 hover:bg-gray-600 bg-gray-700"
+              >
+                <th
+                  scope="row"
+                  className="px-6 py-4 font-medium whitespace-nowrap text-white"
                 >
-                  <th
-                    scope="row"
-                    className="px-6 py-4 font-medium whitespace-nowrap text-white"
+                  {material._id}
+                </th>
+                <td className="px-6 py-4">{material.name}</td>
+                <td className="px-6 py-4">
+                  {material.quantity}/{material.minQuantity}
+                </td>
+                <td className="px-6 py-4">{material.price}</td>
+                <td className="px-6 py-4">
+                  {material.isUsed == true ? "Yes" : "No"}
+                </td>
+                <td className="px-6 py-4">{material.unitOfMeasure}</td>
+                <td className="flex items-center px-6 py-4 space-x-3">
+                  <Link
+                    to={`/materials/${material._id}`}
+                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                   >
-                    {material._id}
-                  </th>
-                  <td className="px-6 py-4">{material.name}</td>
-                  <td className="px-6 py-4">
-                    {material.quantity}/{material.minQuantity}
-                  </td>
-                  <td className="px-6 py-4">{material.price}</td>
-                  <td className="px-6 py-4">
-                    {material.isUsed == true ? "Yes" : "No"}
-                  </td>
-                  <td className="px-6 py-4">{material.unitOfMeasure}</td>
-                  <td className="flex items-center px-6 py-4 space-x-3">
-                    <Link
-                      to={`/materials/${material._id}`}
-                      className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                    >
-                      Details
-                    </Link>
-                    {/* EDIT MODAL */}
-                    <Button
-                      onClick={() => {
-                        onClick();
-                        setModalItem(materials[index]);
-                        setModalIndex(index);
-                      }}
-                    >
-                      Edit
-                    </Button>
-                    <Modal
-                      show={modalOpen}
-                      position="center"
-                      onClose={() => {
-                        onClose();
-                        formRef.current?.reset();
-                        setSubmitEdit(false);
-                      }}
-                    >
-                      <Modal.Header>Edit material</Modal.Header>
-                      <Modal.Body>
-                        <form onSubmit={editHandler} ref={formRef}>
-                          <div className="flex flex-col md:flex-row md:justify-evenly">
-                            <div>
-                              <div>
-                                <div className="mb-2 block">
-                                  <Label
-                                    htmlFor="name"
-                                    value="Name of material"
-                                  />
-                                </div>
-                                <TextInput
-                                  id="name"
-                                  type="text"
-                                  defaultValue={modalItem?.name}
-                                  ref={materialName}
-                                />
-                              </div>
-                              <div>
-                                <div className="mb-2 block">
-                                  <Label htmlFor="quantity" value="Quantity" />
-                                </div>
-                                <TextInput
-                                  id="quantity"
-                                  type="text"
-                                  defaultValue={modalItem?.quantity}
-                                  ref={materialQuantity}
-                                />
-                              </div>
-                              <div>
-                                <div className="mb-2 block">
-                                  <Label htmlFor="isused" value="Is Used" />
-                                </div>
-                                <TextInput
-                                  id="minquantity"
-                                  type="text"
-                                  defaultValue={
-                                    modalItem?.isUsed ? "true" : "false"
-                                  }
-                                  ref={materialIsUsed}
-                                />
-                              </div>
-                            </div>
-                            <div>
-                              <div>
-                                <div className="mb-2 block">
-                                  <Label htmlFor="price" value="Price" />
-                                </div>
-                                <TextInput
-                                  id="price"
-                                  type="text"
-                                  defaultValue={modalItem?.price}
-                                  ref={materialPrice}
-                                />
-                              </div>
-                              <div>
-                                <div className="mb-2 block">
-                                  <Label
-                                    htmlFor="unitofMeasure"
-                                    value="Unit of Measure"
-                                  />
-                                </div>
-                                <TextInput
-                                  id="unitofmeasure"
-                                  type="text"
-                                  defaultValue={modalItem?.unitOfMeasure}
-                                  ref={materialUnitOfMeasurement}
-                                />
-                              </div>
-                              <div>
-                                <div className="mb-2 block">
-                                  <Label
-                                    htmlFor="minquantity"
-                                    value="Min Quantity"
-                                  />
-                                </div>
-                                <TextInput
-                                  id="minquantity"
-                                  type="text"
-                                  defaultValue={modalItem?.minQuantity}
-                                  ref={materialMinQuantity}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          <Modal.Footer className="mt-4 mb-0">
-                            <Button
-                              type="submit"
-                              onClick={() => {
-                                setSubmitEdit(true);
-                              }}
-                            >
-                              {submitEdit ? (
-                                <span>
-                                  <Spinner aria-label="Spinner button example" />
-                                  <span className="pl-3">Loading...</span>
-                                </span>
-                              ) : (
-                                <span>Submit</span>
-                              )}
-                              <span className="text-red-500">{error}</span>
-                            </Button>
-                          </Modal.Footer>
-                        </form>
-                      </Modal.Body>
-                    </Modal>
-                    <a
-                      href="#"
-                      className="font-medium text-red-600 dark:text-red-500 hover:underline"
-                      onClick={() => {
-                        setOpenDeleteModal(true);
-                        console.log(material._id);
-                        setDeleteID(material._id);
-                      }}
-                    >
-                      Remove
-                    </a>
-                  </td>
-                  <Modal
-                    show={openDeleteModal}
-                    size="md"
-                    popup={true}
-                    onClose={() => {
-                      setOpenDeleteModal(false);
+                    Details
+                  </Link>
+                  {/* EDIT MODAL */}
+                  <Button
+                    onClick={() => {
+                      onClick();
+                      setModalItem(materials[index]);
+                      setModalIndex(index);
                     }}
                   >
-                    <Modal.Header />
+                    Edit
+                  </Button>
+                  <Modal
+                    show={modalOpen}
+                    position="center"
+                    onClose={() => {
+                      onClose();
+                      formRef.current?.reset();
+                      setSubmitEdit(false);
+                    }}
+                  >
+                    <Modal.Header>Edit material</Modal.Header>
                     <Modal.Body>
-                      <div className="text-center">
-                        <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                          Are you sure you want to delete this product?
-                        </h3>
-                        <div className="flex justify-center gap-4">
-                          <Button
-                            color="failure"
-                            onClick={() => {
-                              deleteItem();
-                            }}
-                          >
-                            Yes, I'm sure
-                          </Button>
-                          <Button
-                            color="gray"
-                            onClick={() => {
-                              setOpenDeleteModal(false);
-                            }}
-                          >
-                            No, cancel
-                          </Button>
+                      <form onSubmit={editHandler} ref={formRef}>
+                        <div className="flex flex-col md:flex-row md:justify-evenly">
+                          <div>
+                            <div>
+                              <div className="mb-2 block">
+                                <Label
+                                  htmlFor="name"
+                                  value="Name of material"
+                                />
+                              </div>
+                              <TextInput
+                                id="name"
+                                type="text"
+                                defaultValue={modalItem?.name}
+                                ref={materialName}
+                              />
+                            </div>
+                            <div>
+                              <div className="mb-2 block">
+                                <Label htmlFor="quantity" value="Quantity" />
+                              </div>
+                              <TextInput
+                                id="quantity"
+                                type="text"
+                                defaultValue={modalItem?.quantity}
+                                ref={materialQuantity}
+                              />
+                            </div>
+                            <div>
+                              <div className="mb-2 block">
+                                <Label htmlFor="isused" value="Is Used" />
+                              </div>
+                              <TextInput
+                                id="minquantity"
+                                type="text"
+                                defaultValue={
+                                  modalItem?.isUsed ? "true" : "false"
+                                }
+                                ref={materialIsUsed}
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <div>
+                              <div className="mb-2 block">
+                                <Label htmlFor="price" value="Price" />
+                              </div>
+                              <TextInput
+                                id="price"
+                                type="text"
+                                defaultValue={modalItem?.price}
+                                ref={materialPrice}
+                              />
+                            </div>
+                            <div>
+                              <div className="mb-2 block">
+                                <Label
+                                  htmlFor="unitofMeasure"
+                                  value="Unit of Measure"
+                                />
+                              </div>
+                              <TextInput
+                                id="unitofmeasure"
+                                type="text"
+                                defaultValue={modalItem?.unitOfMeasure}
+                                ref={materialUnitOfMeasurement}
+                              />
+                            </div>
+                            <div>
+                              <div className="mb-2 block">
+                                <Label
+                                  htmlFor="minquantity"
+                                  value="Min Quantity"
+                                />
+                              </div>
+                              <TextInput
+                                id="minquantity"
+                                type="text"
+                                defaultValue={modalItem?.minQuantity}
+                                ref={materialMinQuantity}
+                              />
+                            </div>
+                          </div>
                         </div>
-                      </div>
+                        <Modal.Footer className="mt-4 mb-0">
+                          <Button
+                            type="submit"
+                            onClick={() => {
+                              setSubmitEdit(true);
+                            }}
+                          >
+                            {submitEdit ? (
+                              <span>
+                                <Spinner aria-label="Spinner button example" />
+                                <span className="pl-3">Loading...</span>
+                              </span>
+                            ) : (
+                              <span>Submit</span>
+                            )}
+                            <span className="text-red-500">{error}</span>
+                          </Button>
+                        </Modal.Footer>
+                      </form>
                     </Modal.Body>
                   </Modal>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                  <a
+                    href="#"
+                    className="font-medium text-red-600 dark:text-red-500 hover:underline"
+                    onClick={() => {
+                      setOpenDeleteModal(true);
+                      console.log(material._id);
+                      setDeleteID(material._id);
+                    }}
+                  >
+                    Remove
+                  </a>
+                </td>
+                <Modal
+                  show={openDeleteModal}
+                  size="md"
+                  popup={true}
+                  onClose={() => {
+                    setOpenDeleteModal(false);
+                  }}
+                >
+                  <Modal.Header />
+                  <Modal.Body>
+                    <div className="text-center">
+                      <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                        Are you sure you want to delete this product?
+                      </h3>
+                      <div className="flex justify-center gap-4">
+                        <Button
+                          color="failure"
+                          onClick={() => {
+                            deleteItem();
+                          }}
+                        >
+                          Yes, I'm sure
+                        </Button>
+                        <Button
+                          color="gray"
+                          onClick={() => {
+                            setOpenDeleteModal(false);
+                          }}
+                        >
+                          No, cancel
+                        </Button>
+                      </div>
+                    </div>
+                  </Modal.Body>
+                </Modal>
+              </tr>
+            );
+          })}
+        </Table>
       </div>
       <Button
         color="purple"

@@ -2,12 +2,12 @@ export interface Supplier {
   _id: string;
   name: string;
   uin: string;
-  pdv: number;
+  pdv?: number;
   phoneNumber: string;
-  contactPerson: string;
+  contactPerson?: string;
   email: string;
-  dateOfStart: Date;
-  materials: [];
+  dateOfStart?: Date;
+  materials?: [];
 }
 
 export interface Material {

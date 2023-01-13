@@ -4,6 +4,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import Materials from "./pages/Materials";
 import MaterialDetails from "./pages/MaterialDetails";
+import SupplierPage from "./pages/SupplierPage";
+import SupplierDetails from "./pages/SupplierDetails";
 const App = () => {
   return (
     <Routes>
@@ -11,6 +13,8 @@ const App = () => {
       <Route path="/auth/login" element={<LoginPage />} />
       <Route path="/materials" element={<Materials />} />
       <Route path="/materials/:id" element={<MaterialDetails />} />
+      <Route path="/suppliers" element={<SupplierPage />} />
+      <Route path="/suppliers/:id" element={<SupplierDetails />} />
     </Routes>
   );
 };
