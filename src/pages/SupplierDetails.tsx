@@ -1,12 +1,14 @@
-import { Supplier } from "../models/interfaces";
+import { Material, Supplier } from "../models/interfaces";
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CustomFooter from "../components/shared/CustomFooter";
 import Header from "../components/shared/Header";
 import { Table } from "flowbite-react";
 const SupplierDetails = () => {
+  const navigate = useNavigate();
   const id = useParams().id;
   const [supplier, setSupplier] = useState<Supplier>();
+  const [materials, setMaterials] = useState<Material[]>([]);
   const options = {
     weekday: "long",
     year: "numeric",
@@ -20,9 +22,33 @@ const SupplierDetails = () => {
       .then((res) => res.json())
       .then((data) => {
         setSupplier(data.supplier);
+        setMaterials(data.supplier.materials);
         console.log(data.supplier);
       });
   }, []);
+  const deleteMaterial = (materialID: string) => {
+    const updateObject: { [key: string]: any } = {};
+    updateObject.materials = supplier?.materials?.filter(
+      (material: any) => material._id != materialID
+    );
+    console.log(updateObject);
+    fetch(`${import.meta.env.VITE_API_URL}/suppliers/${id}`, {
+      credentials: "include",
+      method: "PATCH",
+      body: JSON.stringify(updateObject),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        if (res.status == 401 || res.status == 403) navigate("/auth/login");
+        return res.json();
+      })
+      .then((data: any) => {
+        console.log(data);
+        setMaterials(materials.filter((res: any) => res._id != materialID));
+      });
+  };
   const returnRow = (name: string, value: string | number | boolean) => {
     return (
       <div className="mt-6 flex justify-center items-center gap-3 text-white">
@@ -62,28 +88,29 @@ const SupplierDetails = () => {
                 </Table.HeadCell>
               </Table.Head>
               <Table.Body className="divide-y">
-                {supplier &&
-                  supplier.materials &&
-                  supplier?.materials.map((material: any) => (
-                    <Table.Row className=" border-gray-700 bg-gray-800">
-                      <Table.Cell className="whitespace-nowrap font-medium text-white">
-                        {material.name}
-                      </Table.Cell>
-                      <Table.Cell>{material.quantity}</Table.Cell>
-                      <Table.Cell>{material.minQuantity}</Table.Cell>
-                      <Table.Cell>{material.price}</Table.Cell>
-                      <Table.Cell>{material.unitOfMeasure}</Table.Cell>
-                      <Table.Cell>{material.isUsed ? "yes" : "no"}</Table.Cell>
-                      <Table.Cell>
-                        <a
-                          href="/tables"
-                          className="font-medium  hover:underline text-blue-500"
-                        >
-                          Edit
-                        </a>
-                      </Table.Cell>
-                    </Table.Row>
-                  ))}
+                {materials.map((material: any) => (
+                  <Table.Row className=" border-gray-700 bg-gray-800">
+                    <Table.Cell className="whitespace-nowrap font-medium text-white">
+                      {material.name}
+                    </Table.Cell>
+                    <Table.Cell>{material.quantity}</Table.Cell>
+                    <Table.Cell>{material.minQuantity}</Table.Cell>
+                    <Table.Cell>{material.price}</Table.Cell>
+                    <Table.Cell>{material.unitOfMeasure}</Table.Cell>
+                    <Table.Cell>{material.isUsed ? "yes" : "no"}</Table.Cell>
+                    <Table.Cell>
+                      <a
+                        href="#"
+                        className="font-medium  hover:underline text-blue-500"
+                        onClick={() => {
+                          deleteMaterial(material._id);
+                        }}
+                      >
+                        delete
+                      </a>
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
               </Table.Body>
             </Table>
           </div>

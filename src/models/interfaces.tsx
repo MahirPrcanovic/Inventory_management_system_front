@@ -7,7 +7,7 @@ export interface Supplier {
   contactPerson?: string;
   email: string;
   dateOfStart?: Date;
-  materials?: [];
+  materials?: Material[];
 }
 
 export interface Material {
