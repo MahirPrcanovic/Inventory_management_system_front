@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomFooter from "../components/shared/CustomFooter";
 import Header from "../components/shared/Header";
-import { Table } from "flowbite-react";
+import { Button, Table } from "flowbite-react";
 const SupplierDetails = () => {
   const navigate = useNavigate();
   const id = useParams().id;
@@ -89,7 +89,10 @@ const SupplierDetails = () => {
               </Table.Head>
               <Table.Body className="divide-y">
                 {materials.map((material: any) => (
-                  <Table.Row className=" border-gray-700 bg-gray-800">
+                  <Table.Row
+                    className=" border-gray-700 bg-gray-800"
+                    key={material._id}
+                  >
                     <Table.Cell className="whitespace-nowrap font-medium text-white">
                       {material.name}
                     </Table.Cell>

@@ -2,11 +2,13 @@ import { Button, Label, TextInput } from "flowbite-react";
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Supplier } from "../../models/interfaces";
+import AddSupplier from "../materials/AddSupplier";
 import EditModal from "../shared/EditModal";
 import RemoveModal from "../shared/RemoveModal";
 import Table from "../shared/Table";
 
 const SupplierHero = () => {
+  const [openSupplierModal, setOpenSupplierModal] = useState(false);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const navigate = useNavigate();
   const [editModalSupplier, setEditModalSupplier] = useState<Supplier>();
@@ -212,6 +214,22 @@ const SupplierHero = () => {
             );
           })}
         </Table>
+        <Button
+          color="purple"
+          pill={true}
+          onClick={() => {
+            setOpenSupplierModal(true);
+          }}
+          className="fixed bottom-0 right-0 mr-10 mb-10"
+        >
+          Add new supplier
+        </Button>
+        <AddSupplier
+          openModal={openSupplierModal}
+          onClose={() => {
+            setOpenSupplierModal(false);
+          }}
+        />
       </div>
     </div>
   );
