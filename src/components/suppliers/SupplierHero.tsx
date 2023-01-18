@@ -229,6 +229,7 @@ const SupplierHero = () => {
           onClose={() => {
             setOpenSupplierModal(false);
           }}
+          setSuppliers={setSuppliers}
         />
       </div>
     </div>

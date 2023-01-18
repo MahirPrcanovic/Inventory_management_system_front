@@ -11,7 +11,7 @@ const Table = ({ head, children }: TableProps) => {
       <thead className="text-xs  uppercase bg-gray-700 text-gray-400">
         <tr>
           {head.map((headtitle) => (
-            <th scope="col" className="px-6 py-3">
+            <th scope="col" className="px-6 py-3" key={headtitle}>
               {headtitle}
             </th>
           ))}

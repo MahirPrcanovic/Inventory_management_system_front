@@ -1,87 +1,136 @@
 import { Button, Checkbox, Label, Modal, TextInput } from "flowbite-react";
-import React from "react";
+import React, { Dispatch, SetStateAction, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { Supplier } from "../../models/interfaces";
 
 interface SupplierProps {
   openModal: boolean;
   onClose: () => void;
+  setSuppliers: Dispatch<SetStateAction<Supplier[]>>;
 }
 
-const AddSupplier = ({ openModal, onClose }: SupplierProps) => {
+const AddSupplier = ({ openModal, onClose, setSuppliers }: SupplierProps) => {
+  const navigate = useNavigate();
+  const NameRef = useRef<HTMLInputElement>(null);
+  const UINRef = useRef<HTMLInputElement>(null);
+  const pdvRef = useRef<HTMLInputElement>(null);
+  const phoneNumberRef = useRef<HTMLInputElement>(null);
+  const contactPersonRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const submitHandler = (e: any) => {
+    e.preventDefault();
+    const sendDataObj = {
+      name: NameRef.current?.value,
+      uin: UINRef.current?.value,
+      pdv: pdvRef.current?.value,
+      phoneNumber: phoneNumberRef.current?.value,
+      contactPerson: contactPersonRef.current?.value,
+      email: emailRef.current?.value,
+    };
+    fetch(`${import.meta.env.VITE_API_URL}/suppliers`, {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify(sendDataObj),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        if (res.status == 401 || 403) navigate("/suppliers");
+        return res.json();
+      })
+      .then((data) => {
+        console.log(data);
+        setSuppliers((prevSuppliers) => [...prevSuppliers, data.newSupplier]);
+        onClose();
+      });
+  };
   return (
     <Modal show={openModal} onClose={onClose}>
       <Modal.Header>Terms of Service</Modal.Header>
-      <Modal.Body className="flex">
-        <div className="flex flex-col lg:flex-row gap-10 mx-auto">
-          <div>
+      <form className="mx-auto" onSubmit={submitHandler}>
+        <Modal.Body className="flex">
+          <div className="flex flex-col lg:flex-row gap-10 mx-auto">
             <div>
-              <div className="mb-2 block">
-                <Label htmlFor="name" value="Your name" />
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="name" value="Supplier name" />
+                </div>
+                <TextInput
+                  id="name"
+                  placeholder="Supplier name"
+                  required={true}
+                  ref={NameRef}
+                />
               </div>
-              <TextInput id="name" placeholder="Your name" required={true} />
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="uin" value="UIN" />
+                </div>
+                <TextInput
+                  id="UIN"
+                  type="text"
+                  required={true}
+                  placeholder={"UIN"}
+                  ref={UINRef}
+                />
+              </div>
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="pdv" value="PDV" />
+                </div>
+                <TextInput
+                  id="pdv"
+                  type="text"
+                  required={true}
+                  placeholder="PDV"
+                  ref={pdvRef}
+                />
+              </div>
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="phone number" value="Phone number" />
+                </div>
+                <TextInput
+                  id="phone number"
+                  type="text"
+                  required={true}
+                  placeholder="Phone Number"
+                  ref={phoneNumberRef}
+                />
+              </div>
             </div>
             <div>
-              <div className="mb-2 block">
-                <Label htmlFor="uin" value="UIN" />
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="contact person" value="Contact person" />
+                </div>
+                <TextInput
+                  id="contact person"
+                  placeholder="Contact person"
+                  required={true}
+                  ref={contactPersonRef}
+                />
               </div>
-              <TextInput id="UIN" type="text" required={true} />
-            </div>
-            <div>
-              <div className="mb-2 block">
-                <Label htmlFor="pdv" value="PDV" />
+              <div>
+                <div className="mb-2 block">
+                  <Label htmlFor="email" value="Email" />
+                </div>
+                <TextInput
+                  id="email"
+                  type="text"
+                  required={true}
+                  placeholder="Email"
+                  ref={emailRef}
+                />
               </div>
-              <TextInput id="pdv" type="text" required={true} />
-            </div>
-            <div>
-              <div className="mb-2 block">
-                <Label htmlFor="phone number" value="Phone number" />
-              </div>
-              <TextInput id="phone number" type="text" required={true} />
             </div>
           </div>
-          <div>
-            <div>
-              <div className="mb-2 block">
-                <Label htmlFor="contact person" value="Contact person" />
-              </div>
-              <TextInput
-                id="contact person"
-                placeholder="Contact person"
-                required={true}
-              />
-            </div>
-            <div>
-              <div className="mb-2 block">
-                <Label htmlFor="email" value="email" />
-              </div>
-              <TextInput
-                id="email"
-                type="text"
-                required={true}
-                placeholder="Email"
-              />
-            </div>
-            <div>
-              <div className="mb-2 block">
-                <Label htmlFor="pdv" value="PDV" />
-              </div>
-              <TextInput id="pdv" type="text" required={true} />
-            </div>
-            <div>
-              <div className="mb-2 block">
-                <Label htmlFor="phone number" value="Phone number" />
-              </div>
-              <TextInput id="phone number" type="text" required={true} />
-            </div>
-          </div>
-        </div>
-      </Modal.Body>
-      <Modal.Footer>
-        {/* <Button onClick={onClick}>I accept</Button>
-        <Button color="gray" onClick={onClick}>
-          Decline
-        </Button> */}
-        <Button>Submit</Button>
-      </Modal.Footer>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button type="submit">Submit</Button>
+        </Modal.Footer>
+      </form>
     </Modal>
   );
 };
