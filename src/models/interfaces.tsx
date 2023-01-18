@@ -20,3 +20,7 @@ export interface Material {
   isUsed: boolean;
   supplier: Supplier;
 }
+export interface MaterialList {
+  _id: string;
+  name: string;
+}

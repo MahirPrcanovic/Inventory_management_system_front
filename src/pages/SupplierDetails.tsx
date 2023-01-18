@@ -1,4 +1,4 @@
-import { Material, Supplier } from "../models/interfaces";
+import { Material, MaterialList, Supplier } from "../models/interfaces";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomFooter from "../components/shared/CustomFooter";
@@ -9,6 +9,7 @@ const SupplierDetails = () => {
   const id = useParams().id;
   const [supplier, setSupplier] = useState<Supplier>();
   const [materials, setMaterials] = useState<Material[]>([]);
+  const [addMaterials, setAddMaterials] = useState<MaterialList[]>([]);
   const options = {
     weekday: "long",
     year: "numeric",
@@ -26,6 +27,7 @@ const SupplierDetails = () => {
         console.log(data.supplier);
       });
   }, []);
+  console.log(supplier?.materials);
   const deleteMaterial = (materialID: string) => {
     const updateObject: { [key: string]: any } = {};
     updateObject.materials = supplier?.materials?.filter(
@@ -49,6 +51,44 @@ const SupplierDetails = () => {
         setMaterials(materials.filter((res: any) => res._id != materialID));
       });
   };
+  const onAddNewMaterial = () => {
+    fetch(`${import.meta.env.VITE_API_URL}/materials/for-list`, {
+      credentials: "include",
+    })
+      .then((res) => {
+        if (res.status == 401 || res.status == 403) navigate("/auth/login");
+        return res.json();
+      })
+      .then((data) => {
+        setAddMaterials(data);
+      });
+  };
+  const addMaterial = (id: string) => {
+    const updateObject: { [key: string]: any } = {};
+    setAddMaterials((prev) => [...prev]);
+    const ids = [];
+    supplier?.materials?.map((material) => {
+      ids.push(material._id);
+    });
+    ids.push(id);
+    fetch(`${import.meta.env.VITE_API_URL}/suppliers/${id}`, {
+      credentials: "include",
+      method: "PATCH",
+      body: JSON.stringify(ids),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        if (res.status == 401 || res.status == 403) navigate("/auth/login");
+        return res.json();
+      })
+      .then((data: any) => {
+        console.log(data);
+        setAddMaterials(materials.filter((res: any) => res._id != id));
+        setMaterials((materials) => [...materials, data.newMaterial]);
+      });
+  };
   const returnRow = (name: string, value: string | number | boolean) => {
     return (
       <div className="mt-6 flex justify-center items-center gap-3 text-white">
@@ -62,8 +102,8 @@ const SupplierDetails = () => {
   return (
     <div>
       <Header />
-      <section className="flex flex-col bg-gray-700 h-[1000px] md:h-screen md:flex-row md:justify-center align-center md:gap-20">
-        <div className="mt-10 md:flex md:flex-col md:items-start">
+      <section className="flex flex-col bg-gray-700  md:flex-row md:justify-center align-center md:gap-20">
+        <div className="mt-10 md:flex md:flex-col md:items-start h-full">
           <h1 className="text-3xl text-blue-200 text-center">Supplier</h1>
           {returnRow("ID", supplier?._id || "")}
           {returnRow("Name", supplier?.name || "")}
@@ -110,6 +150,44 @@ const SupplierDetails = () => {
                         }}
                       >
                         delete
+                      </a>
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table>
+            <Button onClick={onAddNewMaterial}>Add new material</Button>
+          </div>
+          <div className="mx-auto mt-5">
+            <Table>
+              <Table.Head>
+                <Table.HeadCell>Material ID</Table.HeadCell>
+                <Table.HeadCell>Name</Table.HeadCell>
+                <Table.HeadCell>
+                  <span className="sr-only">Edit</span>
+                </Table.HeadCell>
+              </Table.Head>
+              <Table.Body className="divide-y">
+                {addMaterials.map((material: any) => (
+                  <Table.Row
+                    className=" border-gray-700 bg-gray-800"
+                    key={material._id}
+                  >
+                    <Table.Cell className="whitespace-nowrap font-medium text-white">
+                      {material._id}
+                    </Table.Cell>
+                    <Table.Cell className="whitespace-nowrap font-medium text-white">
+                      {material.name}
+                    </Table.Cell>
+                    <Table.Cell>
+                      <a
+                        href="#"
+                        className="font-medium  hover:underline text-blue-500"
+                        onClick={() => {
+                          addMaterial(material._id);
+                        }}
+                      >
+                        add
                       </a>
                     </Table.Cell>
                   </Table.Row>
