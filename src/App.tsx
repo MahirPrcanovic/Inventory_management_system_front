@@ -6,6 +6,7 @@ import Materials from "./pages/Materials";
 import MaterialDetails from "./pages/MaterialDetails";
 import SupplierPage from "./pages/SupplierPage";
 import SupplierDetails from "./pages/SupplierDetails";
+import ProductionProcessPage from "./pages/ProductionProcessPage";
 const App = () => {
   return (
     <Routes>
@@ -15,6 +16,7 @@ const App = () => {
       <Route path="/materials/:id" element={<MaterialDetails />} />
       <Route path="/suppliers" element={<SupplierPage />} />
       <Route path="/suppliers/:id" element={<SupplierDetails />} />
+      <Route path="/production-processes" element={<ProductionProcessPage />} />
     </Routes>
   );
 };

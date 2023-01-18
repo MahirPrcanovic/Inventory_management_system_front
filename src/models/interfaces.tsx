@@ -24,3 +24,12 @@ export interface MaterialList {
   _id: string;
   name: string;
 }
+export interface Process {
+  _id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  price: string;
+  products?: [];
+  productionProcessItems?: [];
+}
