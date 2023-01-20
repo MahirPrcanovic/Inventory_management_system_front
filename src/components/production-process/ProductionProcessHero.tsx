@@ -1,5 +1,5 @@
-import { Button } from "flowbite-react";
-import React, { useEffect, useState } from "react";
+import { Button, Label, Modal, TextInput } from "flowbite-react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Process } from "../../models/interfaces";
 import Table from "../shared/Table";
@@ -7,6 +7,13 @@ import Table from "../shared/Table";
 const ProductionProcessHero = () => {
   const navigate = useNavigate();
   const [processes, setProcesses] = useState<Process[]>([]);
+  const [error, setError] = useState();
+  const [modalOpen, setModalOpen] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const processName = useRef<HTMLInputElement>(null);
+  const editHandler = (e: any) => {
+    e.preventDefault();
+  };
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/process`, {
       credentials: "include",
@@ -18,17 +25,23 @@ const ProductionProcessHero = () => {
       })
       .then((data: any) => setProcesses(data.processes));
   }, []);
+  const onClose = () => {
+    setModalOpen(false);
+  };
+  const onOpen = () => {
+    setModalOpen(true);
+  };
   return (
-    <div className="lg:flex md:w-full min-h-screen">
+    <div className="lg:flex md:w-full min-h-screen bg-[#4b5563]">
       <div className="w-full h-full bg-gray-700 lg:h-[400px] lg:w-72">
         <div className="flex justify-center items-center pt-6 text-2xl text-white lg:text-lg h-1/2">
           <h1 className="">Number of processes:</h1>
-          {/* <h1 className="">{materials.length}</h1> */}
+          <h1 className="">{processes.length}</h1>
         </div>
         <div className="flex justify-center items-center pt-6 text-2xl text-white lg:text-lg h-1/2">
-          <h1 className="">Used elements:</h1>
+          <h1 className="">Ended processes:</h1>
           <h1 className="">
-            {/* {materials.filter((el) => el.isUsed == true).length} */}
+            {processes.filter((el) => el.endDate != null).length}
           </h1>
         </div>
       </div>
@@ -51,15 +64,10 @@ const ProductionProcessHero = () => {
                 <td className="px-6 py-4">{process.endDate}</td>
                 <td className="px-6 py-4">{process.price}</td>
                 <td className="flex items-center px-6 py-4 space-x-3">
-                  <Link
-                    to={`/production-processes/${process._id}`}
-                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                  >
-                    Details
-                  </Link>
                   {/* EDIT MODAL */}
                   <Button
                     onClick={() => {
+                      onOpen();
                       // onClick();
                       // setModalItem(materials[index]);
                       // setModalIndex(index);
@@ -67,18 +75,46 @@ const ProductionProcessHero = () => {
                   >
                     Edit
                   </Button>
-
-                  <a
-                    href="#"
-                    className="font-medium text-red-600 dark:text-red-500 hover:underline"
-                    onClick={() => {
-                      // setOpenDeleteModal(true);
-                      // console.log(material._id);
-                      // setDeleteID(material._id);
+                  <Modal
+                    show={modalOpen}
+                    position="center"
+                    onClose={() => {
+                      onClose();
+                      // formRef.current?.reset();
+                      // setSubmitEdit(false);
                     }}
                   >
-                    Remove
-                  </a>
+                    <Modal.Header>Edit material</Modal.Header>
+                    <Modal.Body>
+                      <form onSubmit={editHandler} ref={formRef}>
+                        <div className="flex flex-col md:flex-row md:justify-evenly">
+                          <div>
+                            <div>
+                              <div className="mb-2 block">
+                                <Label htmlFor="name" value="Name of process" />
+                              </div>
+                              <TextInput
+                                id="name"
+                                type="text"
+                                defaultValue={process?.name}
+                                ref={processName}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <Modal.Footer className="mt-4 mb-0">
+                          <Button
+                            type="submit"
+                            onClick={() => {
+                              // setSubmitEdit(true);
+                            }}
+                          >
+                            Submit
+                          </Button>
+                        </Modal.Footer>
+                      </form>
+                    </Modal.Body>
+                  </Modal>
                 </td>
               </tr>
             );
@@ -91,7 +127,7 @@ const ProductionProcessHero = () => {
         // onClick={() => setOpenAddModal(true)}
         className="fixed bottom-0 right-0 mr-10 mb-10"
       >
-        Add new material
+        Add new process
       </Button>
     </div>
   );
