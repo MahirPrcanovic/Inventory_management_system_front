@@ -22,9 +22,9 @@ const UserHero = () => {
       .then((data) => setUsers(data.users));
   }, []);
   return (
-    <div>
+    <div className="min-h-screen bg-gray-700">
       {" "}
-      <Table head={["ID", "Name", "ProfitMargin", "Price"]}>
+      <Table head={["ID", "Name", "Role"]}>
         {users.map((user, index) => {
           return (
             <tr
