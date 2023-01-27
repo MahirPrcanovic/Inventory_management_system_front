@@ -44,7 +44,14 @@ const MaterialsHero = () => {
     fetch(`${import.meta.env.VITE_API_URL}/materials`, {
       credentials: "include",
     })
-      .then((res) => res.json())
+      .then((res: any) => {
+        if (res.status === 400) {
+          throw new Error("Please check your data validity.");
+        } else if (res.status === 401 || res.status === 403) {
+          navigate("/auth/login");
+        }
+        return res.json();
+      })
       .then((data) => setMaterials(data.materials));
 
     fetch(`${import.meta.env.VITE_API_URL}/suppliers/onlyids`, {

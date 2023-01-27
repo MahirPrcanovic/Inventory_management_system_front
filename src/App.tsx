@@ -1,4 +1,3 @@
-import { useState } from "react";
 import "./App.css";
 import { Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
@@ -8,6 +7,7 @@ import SupplierPage from "./pages/SupplierPage";
 import SupplierDetails from "./pages/SupplierDetails";
 import ProductionProcessPage from "./pages/ProductionProcessPage";
 import ProductsPage from "./pages/ProductsPage";
+import UsersPage from "./pages/UsersPage";
 const App = () => {
   return (
     <Routes>
@@ -19,6 +19,7 @@ const App = () => {
       <Route path="/suppliers/:id" element={<SupplierDetails />} />
       <Route path="/production-processes" element={<ProductionProcessPage />} />
       <Route path="/products" element={<ProductsPage />} />
+      <Route path="/users" element={<UsersPage />} />
     </Routes>
   );
 };

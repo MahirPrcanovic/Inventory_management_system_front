@@ -1,13 +1,22 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Material } from "../../models/interfaces";
 
 const MaterialDetailHero = ({ id }: { id: string }) => {
   const [material, setMaterial] = useState<Material>();
+  const navigate = useNavigate();
   useEffect(() => {
     fetch(`http://localhost:3000/materials/${id}`, {
       credentials: "include",
     })
-      .then((res) => res.json())
+      .then((res: any) => {
+        if (res.status === 400) {
+          throw new Error("Please check your data validity.");
+        } else if (res.status === 401 || res.status === 403) {
+          navigate("/auth/login");
+        }
+        return res.json();
+      })
       .then((data) => {
         setMaterial(data.material);
         console.log(data.material);

@@ -62,6 +62,12 @@ const Header = () => {
           >
             Products
           </Link>
+          <Link
+            to="/users"
+            className="block mt-4 ml-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white"
+          >
+            User
+          </Link>
         </div>
       </div>
     </nav>

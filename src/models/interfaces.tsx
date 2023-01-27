@@ -33,3 +33,17 @@ export interface Process {
   products?: [];
   productionProcessItems?: [];
 }
+
+export interface Product {
+  _id: string;
+  name: string;
+  profitMargin: string;
+  picUrl: string;
+  price: number;
+  productionProcess: string;
+}
+export interface User {
+  _id: string;
+  userName: string;
+  role: string;
+}
